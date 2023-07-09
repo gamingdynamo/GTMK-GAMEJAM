@@ -10,6 +10,7 @@ public class PlayerMovement : MonoBehaviour
 
     public float moveSpeed = 10.0f;
     public float turnSpeed = 10.0f;
+    public SFXscript sfxScript;
 
     public Vector2 input;
     Camera mainCamera;
@@ -40,10 +41,11 @@ public class PlayerMovement : MonoBehaviour
         var dirRight = Vector3.Scale(mainCamera.transform.right, new Vector3(1, 0, 1)).normalized;
         var m_Move = (input.y * m_CamForward) + (input.x * dirRight);
 
-        Vector3 force = (m_Move * moveSpeed);
+        Vector3 force = (m_Move.normalized * moveSpeed);
         force = Vector3.ProjectOnPlane(force, Vector3.up) * input.magnitude;
 
-        rb.velocity = force;
+        rb.velocity = new Vector3(force.x, rb.velocity.y, force.z);
+
     }
 
     private void UpdateAnimation()

@@ -12,6 +12,9 @@ public class EscorterScript : MonoBehaviour
     [SerializeField] float minFollowDist = 5f;
     NavMeshAgent agent;
 
+    public float escortSpeed = 15.0f;
+
+
     [SerializeField]
     Animator animator;
     public float turnSpeed = 10.0f; 
@@ -29,22 +32,34 @@ public class EscorterScript : MonoBehaviour
     void Update()
     {
 
-        if (waypoints[waypointIndex] && (player.position - transform.position).magnitude < minFollowDist)
+        if(waypointIndex >= waypoints.Length)
+        {
+            agent.speed = 0f;
+            return;
+        }
+
+        Transform currentWaypoint = waypoints[waypointIndex];
+
+        bool closeEnough = Vector3.Distance(transform.position, player.transform.position) < minFollowDist;
+        if (closeEnough)
         {
             agent.SetDestination(waypoints[waypointIndex].transform.position);
-            agent.speed = 15f;
-
+            agent.speed = escortSpeed;
         }
-
         else
         {
-            agent.speed = 0f;
+            //stay
+            agent.SetDestination(transform.position);
+            agent.speed = 0.0f;
         }
-        if ((waypoints[waypointIndex].position - transform.position).magnitude < agent.stoppingDistance)
+
+
+        bool reachedCheckpoint = Vector3.Distance(waypoints[waypointIndex].position, transform.position) < agent.stoppingDistance;
+        if (reachedCheckpoint)
         {
-            agent.speed = 0f;
             waypointIndex++;
         }
+
         UpdateAnimation();
     }
 
